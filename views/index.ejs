@@ -1,0 +1,88 @@
+<%- include('partials/header') %>
+
+<div class="hero-section text-center py-5 mb-5">
+  <div class="hero-content">
+    <h1 class="display-3 fw-bold text-warning mb-3">
+      <i class="bi bi-trophy-fill me-3"></i>2026 FIFA World Cup
+    </h1>
+    <h2 class="text-white mb-4">Bracket Picks Challenge</h2>
+    <p class="lead text-light mb-5">
+      Predict results for all 48 teams, 12 groups, and the full knockout bracket.<br>
+      Compete against friends and see who has the best football foresight!
+    </p>
+    <% if (!session || !session.userId) { %>
+    <div class="d-flex justify-content-center gap-3 flex-wrap">
+      <a href="/register" class="btn btn-warning btn-lg px-5">
+        <i class="bi bi-person-plus me-2"></i>Get Started
+      </a>
+      <a href="/login" class="btn btn-outline-light btn-lg px-5">
+        <i class="bi bi-box-arrow-in-right me-2"></i>Login
+      </a>
+    </div>
+    <% } else { %>
+    <a href="/dashboard" class="btn btn-warning btn-lg px-5">
+      <i class="bi bi-grid me-2"></i>Go to My Brackets
+    </a>
+    <% } %>
+  </div>
+</div>
+
+<div class="row g-4 mb-5">
+  <div class="col-md-4">
+    <div class="card h-100 border-0 shadow-sm text-center p-4">
+      <div class="card-body">
+        <i class="bi bi-people-fill display-4 text-success mb-3 d-block"></i>
+        <h5 class="card-title">48 Teams</h5>
+        <p class="card-text text-muted">12 groups of 4 teams, representing the expanded 2026 World Cup format</p>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-4">
+    <div class="card h-100 border-0 shadow-sm text-center p-4">
+      <div class="card-body">
+        <i class="bi bi-calendar-event display-4 text-primary mb-3 d-block"></i>
+        <h5 class="card-title">72 Group Matches</h5>
+        <p class="card-text text-muted">Predict the exact score for every group stage match to maximize your points</p>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-4">
+    <div class="card h-100 border-0 shadow-sm text-center p-4">
+      <div class="card-body">
+        <i class="bi bi-diagram-3-fill display-4 text-warning mb-3 d-block"></i>
+        <h5 class="card-title">Full Bracket</h5>
+        <p class="card-text text-muted">Pick winners through R32, R16, Quarter-Finals, Semi-Finals, and the Final</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="card border-0 shadow-sm mb-5">
+  <div class="card-header bg-dark text-white">
+    <h5 class="mb-0"><i class="bi bi-star-fill text-warning me-2"></i>Scoring System</h5>
+  </div>
+  <div class="card-body">
+    <div class="row">
+      <div class="col-md-6">
+        <h6 class="text-muted mb-3">Group Stage</h6>
+        <ul class="list-unstyled">
+          <li class="mb-2"><span class="badge bg-success me-2">2 pts</span>Exact score prediction</li>
+          <li class="mb-2"><span class="badge bg-primary me-2">1 pt</span>Correct outcome (W/D/L)</li>
+          <li><span class="badge bg-secondary me-2">0 pts</span>Wrong outcome</li>
+        </ul>
+      </div>
+      <div class="col-md-6">
+        <h6 class="text-muted mb-3">Knockout Stage</h6>
+        <ul class="list-unstyled">
+          <li class="mb-1"><span class="badge bg-info text-dark me-2">2 pts</span>Round of 32 correct winner</li>
+          <li class="mb-1"><span class="badge bg-primary me-2">4 pts</span>Round of 16 correct winner</li>
+          <li class="mb-1"><span class="badge bg-warning text-dark me-2">8 pts</span>Quarter-Final correct winner</li>
+          <li class="mb-1"><span class="badge bg-danger me-2">16 pts</span>Semi-Final correct winner</li>
+          <li><span class="badge bg-dark me-2">32 pts</span>Final correct winner</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+<%- include('partials/footer') %>
