@@ -1,0 +1,80 @@
+<%- include('../partials/header', { title: bracket.name + ' – Knockout' }) %>
+<div class="container py-4">
+  <div class="d-flex align-items-center justify-content-between mb-3">
+    <div>
+      <a href="/bracket/<%= bracket.id %>/group" class="btn btn-sm btn-outline-secondary me-2">← Group Stage</a>
+      <h2 class="d-inline-block mb-0">Knockout Picks – <em><%= bracket.name %></em></h2>
+    </div>
+    <a href="/dashboard" class="btn btn-outline-secondary">My Brackets</a>
+  </div>
+
+  <% if (typeof saved !== 'undefined' && saved) { %>
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+      ✅ Knockout picks saved!
+      <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+  <% } %>
+
+  <% if (noRoundsOpen) { %>
+    <div class="alert alert-info">
+      The knockout stage has not been set up yet. Check back after the group stage is complete!
+    </div>
+  <% } else { %>
+    <p class="text-muted">Select the winner for each knockout match. Points per correct pick: R32=2, R16=4, QF=8, SF=16, Final=32.</p>
+    <form method="POST" action="/bracket/<%= bracket.id %>/knockout">
+      <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+      <% for (const round of rounds) { %>
+        <% if (matchesByRound[round] && matchesByRound[round].length) { %>
+          <div class="card mb-4">
+            <div class="card-header bg-primary text-white fw-bold"><%= round %></div>
+            <div class="card-body">
+              <div class="row g-3">
+                <% for (const m of matchesByRound[round]) { %>
+                  <div class="col-md-6">
+                    <div class="card border-secondary h-100">
+                      <div class="card-body p-3">
+                        <p class="mb-2 text-muted small">Match <%= m.match_number %></p>
+                        <div class="form-check">
+                          <input
+                            class="form-check-input"
+                            type="radio"
+                            name="winner_<%= m.id %>"
+                            id="t1_<%= m.id %>"
+                            value="<%= m.team1_id %>"
+                            <%= (pickMap[m.id] && pickMap[m.id].predicted_winner_id === m.team1_id) ? 'checked' : '' %>
+                            required
+                          >
+                          <label class="form-check-label" for="t1_<%= m.id %>">
+                            <%= m.team1_name || 'TBD' %>
+                          </label>
+                        </div>
+                        <div class="form-check mt-1">
+                          <input
+                            class="form-check-input"
+                            type="radio"
+                            name="winner_<%= m.id %>"
+                            id="t2_<%= m.id %>"
+                            value="<%= m.team2_id %>"
+                            <%= (pickMap[m.id] && pickMap[m.id].predicted_winner_id === m.team2_id) ? 'checked' : '' %>
+                          >
+                          <label class="form-check-label" for="t2_<%= m.id %>">
+                            <%= m.team2_name || 'TBD' %>
+                          </label>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                <% } %>
+              </div>
+            </div>
+          </div>
+        <% } %>
+      <% } %>
+      <div class="d-flex gap-2 mb-5">
+        <button type="submit" class="btn btn-primary btn-lg">💾 Save Knockout Picks</button>
+        <a href="/dashboard" class="btn btn-outline-secondary btn-lg">Cancel</a>
+      </div>
+    </form>
+  <% } %>
+</div>
+<%- include('../partials/footer') %>

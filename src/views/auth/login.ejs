@@ -1,0 +1,29 @@
+<%- include('../partials/header', { title: 'Login' }) %>
+<div class="container py-5">
+  <div class="row justify-content-center">
+    <div class="col-md-5">
+      <div class="card shadow">
+        <div class="card-body p-4">
+          <h2 class="card-title text-center mb-4">Login</h2>
+          <% if (error) { %>
+            <div class="alert alert-danger"><%= error %></div>
+          <% } %>
+          <form method="POST" action="/auth/login">
+            <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+            <div class="mb-3">
+              <label class="form-label" for="username">Username</label>
+              <input id="username" name="username" type="text" class="form-control" required autofocus>
+            </div>
+            <div class="mb-4">
+              <label class="form-label" for="password">Password</label>
+              <input id="password" name="password" type="password" class="form-control" required>
+            </div>
+            <button class="btn btn-success w-100" type="submit">Login</button>
+          </form>
+          <p class="text-center mt-3 mb-0">Don't have an account? <a href="/auth/register">Register</a></p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<%- include('../partials/footer') %>

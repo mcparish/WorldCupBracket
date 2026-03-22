@@ -1,0 +1,32 @@
+{
+  "name": "worldcupbracket",
+  "version": "1.0.0",
+  "description": "World Cup Bracket Picks",
+  "main": "src/app.js",
+  "scripts": {
+    "start": "node src/app.js",
+    "test": "node --test test/"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mcparish/WorldCupBracket.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/mcparish/WorldCupBracket/issues"
+  },
+  "homepage": "https://github.com/mcparish/WorldCupBracket#readme",
+  "dependencies": {
+    "bcrypt": "^6.0.0",
+    "better-sqlite3": "^12.8.0",
+    "cookie-parser": "^1.4.7",
+    "ejs": "^5.0.1",
+    "express": "^5.2.1",
+    "express-rate-limit": "^8.3.1",
+    "express-session": "^1.19.0",
+    "memorystore": "^1.6.7"
+  }
+}

@@ -1,0 +1,54 @@
+<%- include('partials/header', { title: 'Standings' }) %>
+<div class="container py-4">
+  <h2 class="mb-4">🏅 Standings</h2>
+
+  <% if (standings.length === 0) { %>
+    <div class="alert alert-info">No picks have been scored yet. Check back after matches are played!</div>
+  <% } else { %>
+    <div class="table-responsive">
+      <table class="table table-striped table-hover align-middle">
+        <thead class="table-success">
+          <tr>
+            <th>#</th>
+            <th>Player</th>
+            <th>Bracket</th>
+            <th class="text-center">Group Pts</th>
+            <th class="text-center">Knockout Pts</th>
+            <th class="text-center fw-bold">Total</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% standings.forEach((s, idx) => { %>
+            <tr>
+              <td><%= idx + 1 %></td>
+              <td>👤 <%= s.username %></td>
+              <td><%= s.bracketName %></td>
+              <td class="text-center"><%= s.groupPoints %></td>
+              <td class="text-center"><%= s.knockoutPoints %></td>
+              <td class="text-center fw-bold fs-5"><%= s.totalPoints %></td>
+            </tr>
+          <% }) %>
+        </tbody>
+      </table>
+    </div>
+  <% } %>
+
+  <div class="card mt-4">
+    <div class="card-header">Scoring Guide</div>
+    <div class="card-body">
+      <table class="table table-sm mb-0">
+        <thead><tr><th>Round</th><th>Points</th></tr></thead>
+        <tbody>
+          <tr><td>Group Stage – Correct Outcome</td><td>1 pt</td></tr>
+          <tr><td>Group Stage – Exact Score</td><td>2 pts</td></tr>
+          <tr><td>Round of 32 – Correct Pick</td><td>2 pts</td></tr>
+          <tr><td>Round of 16 – Correct Pick</td><td>4 pts</td></tr>
+          <tr><td>Quarterfinal – Correct Pick</td><td>8 pts</td></tr>
+          <tr><td>Semifinal – Correct Pick</td><td>16 pts</td></tr>
+          <tr><td>Final – Correct Pick</td><td>32 pts</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+<%- include('partials/footer') %>

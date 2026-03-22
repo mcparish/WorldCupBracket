@@ -1,0 +1,55 @@
+<%- include('partials/header', { title: 'My Brackets' }) %>
+<div class="container py-4">
+  <div class="mb-4">
+    <h2>My Brackets</h2>
+  </div>
+
+  <!-- Create Bracket (native details element, works without JavaScript) -->
+  <details class="mb-4">
+    <summary class="btn btn-success d-inline-block">+ New Bracket</summary>
+    <div class="card card-body mt-2">
+      <form method="POST" action="/dashboard/create" class="row g-2 align-items-end">
+        <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+        <div class="col-sm-8">
+          <label class="form-label" for="bracketName">Bracket Name (optional)</label>
+          <input id="bracketName" name="name" type="text" class="form-control" placeholder="e.g. My Bold Picks">
+        </div>
+        <div class="col-sm-4">
+          <button type="submit" class="btn btn-success w-100">Create &amp; Pick Scores</button>
+        </div>
+      </form>
+    </div>
+  </details>
+
+  <% if (brackets.length === 0) { %>
+    <div class="alert alert-info">
+      You haven't created any brackets yet. Click <strong>+ New Bracket</strong> to get started!
+    </div>
+  <% } else { %>
+    <div class="row g-3">
+      <% for (const b of brackets) { %>
+        <div class="col-md-6 col-lg-4">
+          <div class="card h-100">
+            <div class="card-body">
+              <h5 class="card-title"><%= b.name %></h5>
+              <p class="card-text text-muted small">Created: <%= new Date(b.created_at).toLocaleDateString() %></p>
+              <div class="progress mb-2" style="height:6px">
+                <div class="progress-bar bg-success" style="width:<%= b.totalMatches ? Math.round(b.pickCount / b.totalMatches * 100) : 0 %>%"></div>
+              </div>
+              <p class="small text-muted"><%= b.pickCount %> / <%= b.totalMatches %> group picks</p>
+            </div>
+            <div class="card-footer d-flex gap-2">
+              <a href="/bracket/<%= b.id %>/group" class="btn btn-sm btn-outline-success flex-fill">Group Picks</a>
+              <a href="/bracket/<%= b.id %>/knockout" class="btn btn-sm btn-outline-primary flex-fill">Knockout</a>
+              <form method="POST" action="/dashboard/delete/<%= b.id %>" onsubmit="return confirm('Delete this bracket?')">
+                <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                <button class="btn btn-sm btn-outline-danger" type="submit">🗑</button>
+              </form>
+            </div>
+          </div>
+        </div>
+      <% } %>
+    </div>
+  <% } %>
+</div>
+<%- include('partials/footer') %>

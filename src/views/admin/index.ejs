@@ -1,0 +1,125 @@
+<%- include('../partials/header', { title: 'Admin' }) %>
+<div class="container-fluid py-4">
+  <h2 class="mb-4">⚙️ Admin Panel</h2>
+
+  <% if (typeof error !== 'undefined' && error) { %>
+    <div class="alert alert-danger">Error: <%= error %></div>
+  <% } %>
+
+  <!-- Knockout Setup -->
+  <div class="card mb-5">
+    <div class="card-header fw-bold">Knockout Stage Setup</div>
+    <div class="card-body">
+      <% if (knockoutMatches.length === 0) { %>
+        <p>The knockout stage has not been created yet. Once all group stage matches are complete, click below.</p>
+        <form method="POST" action="/admin/knockout/setup">
+          <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+          <button class="btn btn-warning" type="submit">Create Knockout Stage Matches</button>
+        </form>
+      <% } else { %>
+        <p class="text-muted small">Set teams and record results for knockout matches.</p>
+        <% const roundOrder = ['Round of 32','Round of 16','Quarterfinal','Semifinal','Final']; %>
+        <% for (const round of roundOrder) { %>
+          <% const rMatches = knockoutMatches.filter(m => m.round === round); %>
+          <% if (rMatches.length) { %>
+            <h5 class="mt-3"><%= round %></h5>
+            <div class="table-responsive">
+              <table class="table table-sm align-middle">
+                <thead class="table-light">
+                  <tr>
+                    <th>#</th><th>Team 1</th><th>Team 2</th><th>Winner</th><th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <% for (const m of rMatches) { %>
+                    <tr>
+                      <td><%= m.match_number %></td>
+                      <td><%= m.team1_name || '—' %></td>
+                      <td><%= m.team2_name || '—' %></td>
+                      <td>
+                        <% if (m.status === 'completed') { %>
+                          <span class="badge bg-success"><%= m.winner_name %></span>
+                        <% } else { %>
+                          <span class="text-muted">TBD</span>
+                        <% } %>
+                      </td>
+                      <td>
+                        <% if (m.team1_id && m.team2_id && m.status !== 'completed') { %>
+                          <form method="POST" action="/admin/knockout/<%= m.id %>/result" class="d-inline-flex gap-1">
+                            <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                            <select name="winner_id" class="form-select form-select-sm" style="width:auto" required>
+                              <option value="">Pick winner</option>
+                              <option value="<%= m.team1_id %>"><%= m.team1_name %></option>
+                              <option value="<%= m.team2_id %>"><%= m.team2_name %></option>
+                            </select>
+                            <button class="btn btn-sm btn-success" type="submit">Set</button>
+                          </form>
+                        <% } %>
+                      </td>
+                    </tr>
+                  <% } %>
+                </tbody>
+              </table>
+            </div>
+          <% } %>
+        <% } %>
+      <% } %>
+    </div>
+  </div>
+
+  <!-- Group Stage Results -->
+  <div class="card">
+    <div class="card-header fw-bold">Group Stage Results</div>
+    <div class="card-body p-0">
+      <div class="table-responsive">
+        <table class="table table-sm table-hover mb-0 align-middle">
+          <thead class="table-light sticky-top">
+            <tr>
+              <th>#</th><th>Group</th><th class="text-end">Home</th><th class="text-center">Score</th>
+              <th>Away</th><th>Status</th><th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% for (const m of groupMatches) { %>
+              <tr class="<%= m.status === 'completed' ? 'table-success' : '' %>">
+                <td><%= m.match_number %></td>
+                <td><strong><%= m.group_letter %></strong></td>
+                <td class="text-end"><%= m.team1_name %></td>
+                <td class="text-center">
+                  <% if (m.status === 'completed') { %>
+                    <strong><%= m.actual_score1 %> – <%= m.actual_score2 %></strong>
+                  <% } else { %>
+                    <span class="text-muted">vs</span>
+                  <% } %>
+                </td>
+                <td><%= m.team2_name %></td>
+                <td>
+                  <span class="badge <%= m.status === 'completed' ? 'bg-success' : 'bg-secondary' %>">
+                    <%= m.status %>
+                  </span>
+                </td>
+                <td>
+                  <% if (m.status !== 'completed') { %>
+                    <form method="POST" action="/admin/group/<%= m.id %>/result" class="d-inline-flex gap-1">
+                      <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                      <input type="number" name="score1" min="0" max="30" class="form-control form-control-sm" style="width:60px" placeholder="H" required>
+                      <span class="align-self-center">–</span>
+                      <input type="number" name="score2" min="0" max="30" class="form-control form-control-sm" style="width:60px" placeholder="A" required>
+                      <button class="btn btn-sm btn-success" type="submit">Set</button>
+                    </form>
+                  <% } else { %>
+                    <form method="POST" action="/admin/group/<%= m.id %>/reset" class="d-inline">
+                      <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                      <button class="btn btn-sm btn-outline-warning" type="submit" onclick="return confirm('Reset this result?')">Reset</button>
+                    </form>
+                  <% } %>
+                </td>
+              </tr>
+            <% } %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+<%- include('../partials/footer') %>
