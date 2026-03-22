@@ -1,0 +1,42 @@
+<%- include('partials/header', { title: 'Home' }) %>
+<div class="container py-5 text-center">
+  <div class="py-5">
+    <h1 class="display-4 fw-bold">⚽ World Cup 2026 Bracket Picks</h1>
+    <p class="lead text-muted mt-3">
+      Sign up, pick scores for all 72 group stage matches (12 groups), predict the knockout rounds,
+      and compete with friends. Multiple brackets allowed!
+    </p>
+    <div class="mt-4">
+      <a href="/auth/register" class="btn btn-success btn-lg me-3">Get Started</a>
+      <a href="/standings" class="btn btn-outline-success btn-lg">View Standings</a>
+    </div>
+  </div>
+
+  <div class="row g-4 mt-3">
+    <div class="col-md-4">
+      <div class="card h-100 border-success">
+        <div class="card-body">
+          <h5 class="card-title">🏟️ Group Stage</h5>
+          <p class="card-text">Pick the exact scores for all 72 group stage matches across 12 groups. Earn 1 point for the correct outcome, 2 for the exact score!</p>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="card h-100 border-success">
+        <div class="card-body">
+          <h5 class="card-title">🏆 Knockout Rounds</h5>
+          <p class="card-text">After the group stage, predict winners all the way to the World Cup champion. Points double each round – max 32 pts for the final!</p>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="card h-100 border-success">
+        <div class="card-body">
+          <h5 class="card-title">📊 Live Standings</h5>
+          <p class="card-text">Track your score and see how you stack up against everyone else. Submit multiple brackets for extra chances to win!</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<%- include('partials/footer') %>

@@ -1,0 +1,26 @@
+body {
+  background-color: #f8f9fa;
+}
+
+.score-input {
+  width: 55px !important;
+  min-width: 55px;
+  padding: 0.25rem 0.375rem;
+}
+
+.navbar-brand {
+  font-size: 1.3rem;
+}
+
+.card {
+  border-radius: 0.5rem;
+}
+
+.table th {
+  white-space: nowrap;
+}
+
+/* Highlight completed matches */
+tr.table-success td {
+  font-weight: 500;
+}

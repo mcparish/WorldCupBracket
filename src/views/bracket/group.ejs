@@ -1,0 +1,79 @@
+<%- include('../partials/header', { title: bracket.name + ' – Group Stage' }) %>
+<div class="container py-4">
+  <div class="d-flex align-items-center justify-content-between mb-3">
+    <div>
+      <a href="/dashboard" class="btn btn-sm btn-outline-secondary me-2">← Back</a>
+      <h2 class="d-inline-block mb-0">Group Stage Picks – <em><%= bracket.name %></em></h2>
+    </div>
+    <a href="/bracket/<%= bracket.id %>/knockout" class="btn btn-primary">Knockout Picks →</a>
+  </div>
+
+  <% if (typeof saved !== 'undefined' && saved) { %>
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+      ✅ Picks saved successfully!
+      <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+  <% } %>
+
+  <p class="text-muted">
+    Enter your predicted score for each match. <strong>Correct outcome = 1 pt</strong>, <strong>exact score = 2 pts</strong>.
+    Click <em>Save All Picks</em> when done.
+  </p>
+
+  <form method="POST" action="/bracket/<%= bracket.id %>/group">
+    <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+    <% for (const [letter, matches] of Object.entries(groups)) { %>
+      <div class="card mb-4">
+        <div class="card-header bg-success text-white fw-bold">Group <%= letter %></div>
+        <div class="card-body p-0">
+          <table class="table table-sm table-hover mb-0 align-middle">
+            <thead class="table-light">
+              <tr>
+                <th class="text-end" style="width:38%">Home</th>
+                <th class="text-center" style="width:24%">Score</th>
+                <th style="width:38%">Away</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% for (const m of matches) { %>
+                <tr>
+                  <td class="text-end fw-medium"><%= m.team1_name %></td>
+                  <td class="text-center">
+                    <div class="d-flex justify-content-center align-items-center gap-1">
+                      <input
+                        type="number"
+                        name="score1_<%= m.id %>"
+                        value="<%= m.pick ? m.pick.predicted_score1 : '' %>"
+                        min="0" max="30"
+                        class="form-control form-control-sm score-input text-center"
+                        placeholder="0"
+                        required
+                      >
+                      <span class="fw-bold text-muted">–</span>
+                      <input
+                        type="number"
+                        name="score2_<%= m.id %>"
+                        value="<%= m.pick ? m.pick.predicted_score2 : '' %>"
+                        min="0" max="30"
+                        class="form-control form-control-sm score-input text-center"
+                        placeholder="0"
+                        required
+                      >
+                    </div>
+                  </td>
+                  <td class="fw-medium"><%= m.team2_name %></td>
+                </tr>
+              <% } %>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    <% } %>
+
+    <div class="d-flex gap-2 mb-5">
+      <button type="submit" class="btn btn-success btn-lg">💾 Save All Picks</button>
+      <a href="/dashboard" class="btn btn-outline-secondary btn-lg">Cancel</a>
+    </div>
+  </form>
+</div>
+<%- include('../partials/footer') %>

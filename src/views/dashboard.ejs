@@ -1,0 +1,62 @@
+<%- include('partials/header', { title: 'My Brackets' }) %>
+<div class="container py-4">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>My Brackets</h2>
+    <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#createModal">+ New Bracket</button>
+  </div>
+
+  <% if (brackets.length === 0) { %>
+    <div class="alert alert-info">
+      You haven't created any brackets yet. Click <strong>+ New Bracket</strong> to get started!
+    </div>
+  <% } else { %>
+    <div class="row g-3">
+      <% for (const b of brackets) { %>
+        <div class="col-md-6 col-lg-4">
+          <div class="card h-100">
+            <div class="card-body">
+              <h5 class="card-title"><%= b.name %></h5>
+              <p class="card-text text-muted small">Created: <%= new Date(b.created_at).toLocaleDateString() %></p>
+              <div class="progress mb-2" style="height:6px">
+                <div class="progress-bar bg-success" style="width:<%= b.totalMatches ? Math.round(b.pickCount / b.totalMatches * 100) : 0 %>%"></div>
+              </div>
+              <p class="small text-muted"><%= b.pickCount %> / <%= b.totalMatches %> group picks</p>
+            </div>
+            <div class="card-footer d-flex gap-2">
+              <a href="/bracket/<%= b.id %>/group" class="btn btn-sm btn-outline-success flex-fill">Group Picks</a>
+              <a href="/bracket/<%= b.id %>/knockout" class="btn btn-sm btn-outline-primary flex-fill">Knockout</a>
+              <form method="POST" action="/dashboard/delete/<%= b.id %>" onsubmit="return confirm('Delete this bracket?')">
+                <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                <button class="btn btn-sm btn-outline-danger" type="submit">🗑</button>
+              </form>
+            </div>
+          </div>
+        </div>
+      <% } %>
+    </div>
+  <% } %>
+</div>
+
+<!-- Create Bracket Modal -->
+<div class="modal fade" id="createModal" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">New Bracket</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <form method="POST" action="/dashboard/create">
+        <div class="modal-body">
+          <label class="form-label" for="bracketName">Bracket Name (optional)</label>
+          <input id="bracketName" name="name" type="text" class="form-control" placeholder="e.g. My Bold Picks">
+          <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+          <button type="submit" class="btn btn-success">Create & Pick Scores</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+<%- include('partials/footer') %>
