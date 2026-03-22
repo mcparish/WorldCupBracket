@@ -43,7 +43,16 @@ app.use(session({
   }
 }));
 
-// Rate limiting on auth endpoints
+// Rate limiting — general limiter on all routes
+const generalLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 300,
+  standardHeaders: true,
+  legacyHeaders: false
+});
+app.use(generalLimiter);
+
+// Stricter rate limiting on auth endpoints
 const authLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
   max: 30,
