@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const db = require('../db/database');
 const { requireAdmin } = require('../middleware/auth');
+const { ROUNDS, ROUND_LABELS } = require('../utils/constants');
 
 // GET /admin
 router.get('/admin', requireAdmin, (req, res) => {
@@ -30,8 +31,8 @@ router.get('/admin', requireAdmin, (req, res) => {
     ORDER BY km.round, km.position
   `).all();
 
-  const roundLabels = { r32: 'Round of 32', r16: 'Round of 16', qf: 'Quarter-Finals', sf: 'Semi-Finals', final: 'Final' };
-  const rounds = ['r32', 'r16', 'qf', 'sf', 'final'];
+  const roundLabels = ROUND_LABELS;
+  const rounds = ROUNDS;
 
   const knockoutByRound = {};
   for (const round of rounds) {

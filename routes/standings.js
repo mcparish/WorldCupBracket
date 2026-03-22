@@ -1,8 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const db = require('../db/database');
-
-const KNOCKOUT_POINTS = { r32: 2, r16: 4, qf: 8, sf: 16, final: 32 };
+const { KNOCKOUT_POINTS } = require('../utils/constants');
 
 function getOutcome(home, away) {
   if (home > away) return 'home';

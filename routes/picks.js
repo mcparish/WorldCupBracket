@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const db = require('../db/database');
 const { requireLogin } = require('../middleware/auth');
+const { ROUNDS, ROUND_LABELS } = require('../utils/constants');
 
 // Helper: verify bracket belongs to logged-in user
 function ownsBracket(bracketId, userId) {
@@ -112,8 +113,8 @@ router.get('/brackets/:id/knockout-picks', requireLogin, (req, res) => {
 
   const bracket = db.prepare('SELECT * FROM brackets WHERE id = ?').get(bracketId);
 
-  const rounds = ['r32', 'r16', 'qf', 'sf', 'final'];
-  const roundLabels = { r32: 'Round of 32', r16: 'Round of 16', qf: 'Quarter-Finals', sf: 'Semi-Finals', final: 'Final' };
+  const rounds = ROUNDS;
+  const roundLabels = ROUND_LABELS;
 
   // Get all knockout matches with team names and existing picks
   const knockoutMatches = db.prepare(`
