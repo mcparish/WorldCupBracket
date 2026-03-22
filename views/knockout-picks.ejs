@@ -16,6 +16,7 @@
 </div>
 
 <form method="POST" action="/brackets/<%= bracket.id %>/knockout-picks">
+  <input type="hidden" name="_csrf" value="<%= csrfToken %>">
   <% rounds.forEach(round => { %>
   <% if (byRound[round] && byRound[round].length > 0) { %>
   <div class="card shadow-sm mb-4">

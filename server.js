@@ -2,6 +2,8 @@ const express = require('express');
 const session = require('express-session');
 const bodyParser = require('body-parser');
 const path = require('path');
+const rateLimit = require('express-rate-limit');
+const { csrfMiddleware } = require('./middleware/csrf');
 
 // Initialize DB (creates tables, seeds data)
 require('./db/database');
@@ -14,6 +16,7 @@ const adminRoutes = require('./routes/admin');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
+const IS_PROD = process.env.NODE_ENV === 'production';
 const SESSION_SECRET = process.env.SESSION_SECRET || 'worldcup2026-dev-secret-change-in-prod';
 
 // View engine
@@ -32,13 +35,31 @@ app.use(session({
   secret: SESSION_SECRET,
   resave: false,
   saveUninitialized: false,
-  cookie: { maxAge: 7 * 24 * 60 * 60 * 1000 } // 7 days
+  cookie: {
+    maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+    secure: IS_PROD,
+    httpOnly: true,
+    sameSite: 'lax'
+  }
 }));
 
-// Make session data available to all views
+// Rate limiting on auth endpoints
+const authLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 30,
+  message: 'Too many requests, please try again later.',
+  standardHeaders: true,
+  legacyHeaders: false
+});
+app.use('/login', authLimiter);
+app.use('/register', authLimiter);
+
+// CSRF protection (synchronizer token pattern via session)
+app.use(csrfMiddleware);
+
+// Make session data available to all views; flash handled in csrfMiddleware locals
 app.use((req, res, next) => {
   res.locals.session = req.session;
-  // Pass and clear flash message
   res.locals.flash = req.session.flash || null;
   delete req.session.flash;
   next();

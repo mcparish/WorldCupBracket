@@ -5,6 +5,7 @@
   <% if (!groupStageComplete) { %>
   <form method="POST" action="/admin/complete-group-stage" class="d-inline"
         onsubmit="return confirm('Mark group stage as complete? This unlocks knockout picks for all users.')">
+    <input type="hidden" name="_csrf" value="<%= csrfToken %>">
     <button type="submit" class="btn btn-success">
       <i class="bi bi-check-circle me-2"></i>Mark Group Stage Complete
     </button>
@@ -51,6 +52,7 @@
                     <td class="text-end"><strong><%= match.home_team %></strong></td>
                     <td>
                       <form method="POST" action="/admin/group-result" class="d-flex align-items-center gap-1 justify-content-center">
+                        <input type="hidden" name="_csrf" value="<%= csrfToken %>">
                         <input type="hidden" name="match_id" value="<%= match.id %>">
                         <input type="number" name="home_score" class="form-control form-control-sm score-input text-center"
                                value="<%= match.home_score !== null ? match.home_score : '' %>"
@@ -93,6 +95,7 @@
   <div class="card-body">
     <p class="text-muted small mb-3">Enter team names exactly as they appear (case-sensitive). Round: r32, r16, qf, sf, final. Position: 1–16 for R32, etc.</p>
     <form method="POST" action="/admin/knockout-match" class="row g-2 align-items-end">
+      <input type="hidden" name="_csrf" value="<%= csrfToken %>">
       <div class="col-md-2">
         <label class="form-label">Round</label>
         <select class="form-select form-select-sm" name="round" required>
@@ -193,6 +196,7 @@
             <td>
               <% if (m.home_team && m.away_team) { %>
               <form method="POST" action="/admin/knockout-result" class="d-flex gap-2">
+                <input type="hidden" name="_csrf" value="<%= csrfToken %>">
                 <input type="hidden" name="knockout_match_id" value="<%= m.id %>">
                 <select class="form-select form-select-sm" name="winner_team_name" required>
                   <option value="">Pick winner…</option>

@@ -17,6 +17,7 @@
 </div>
 
 <form method="POST" action="/brackets/<%= bracket.id %>/group-picks">
+  <input type="hidden" name="_csrf" value="<%= csrfToken %>">
   <div class="accordion mb-4" id="groupAccordion">
     <% groupNames.forEach((groupName, idx) => { %>
     <div class="accordion-item">
