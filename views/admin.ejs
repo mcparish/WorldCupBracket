@@ -1,0 +1,223 @@
+<%- include('partials/header') %>
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <h2><i class="bi bi-shield-lock me-2"></i>Admin Panel</h2>
+  <% if (!groupStageComplete) { %>
+  <form method="POST" action="/admin/complete-group-stage" class="d-inline"
+        onsubmit="return confirm('Mark group stage as complete? This unlocks knockout picks for all users.')">
+    <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+    <button type="submit" class="btn btn-success">
+      <i class="bi bi-check-circle me-2"></i>Mark Group Stage Complete
+    </button>
+  </form>
+  <% } else { %>
+  <span class="badge bg-success fs-6"><i class="bi bi-check-circle me-2"></i>Group Stage Complete</span>
+  <% } %>
+</div>
+
+<!-- ===== SECTION 1: GROUP STAGE RESULTS ===== -->
+<div class="card shadow-sm mb-5">
+  <div class="card-header bg-dark text-white">
+    <h5 class="mb-0"><i class="bi bi-table me-2"></i>Group Stage Results</h5>
+  </div>
+  <div class="card-body p-0">
+    <div class="accordion" id="adminGroupAccordion">
+      <% groupNames.forEach((groupName, idx) => { %>
+      <div class="accordion-item">
+        <h2 class="accordion-header">
+          <button class="accordion-button collapsed fw-bold" type="button"
+                  data-bs-toggle="collapse" data-bs-target="#adminGroup<%= groupName %>">
+            <span class="badge bg-dark me-3">Group <%= groupName %></span>
+            <% const playedCount = groupedMatches[groupName].filter(m => m.played).length; %>
+            <span class="text-muted small fw-normal"><%= playedCount %>/6 played</span>
+          </button>
+        </h2>
+        <div id="adminGroup<%= groupName %>" class="accordion-collapse collapse">
+          <div class="accordion-body p-0">
+            <div class="table-responsive">
+              <table class="table table-hover align-middle mb-0">
+                <thead class="table-light">
+                  <tr>
+                    <th>#</th>
+                    <th class="text-end">Home</th>
+                    <th class="text-center" style="width:180px">Score</th>
+                    <th>Away</th>
+                    <th class="text-center" style="width:120px">Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <% groupedMatches[groupName].forEach(match => { %>
+                  <tr>
+                    <td class="text-muted small"><%= match.match_number %></td>
+                    <td class="text-end"><strong><%= match.home_team %></strong></td>
+                    <td>
+                      <form method="POST" action="/admin/group-result" class="d-flex align-items-center gap-1 justify-content-center">
+                        <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                        <input type="hidden" name="match_id" value="<%= match.id %>">
+                        <input type="number" name="home_score" class="form-control form-control-sm score-input text-center"
+                               value="<%= match.home_score !== null ? match.home_score : '' %>"
+                               min="0" max="<%= maxScore %>" placeholder="0" required>
+                        <span class="text-muted">–</span>
+                        <input type="number" name="away_score" class="form-control form-control-sm score-input text-center"
+                               value="<%= match.away_score !== null ? match.away_score : '' %>"
+                               min="0" max="<%= maxScore %>" placeholder="0" required>
+                        <button type="submit" class="btn btn-sm btn-success">
+                          <i class="bi bi-check-lg"></i>
+                        </button>
+                      </form>
+                    </td>
+                    <td><strong><%= match.away_team %></strong></td>
+                    <td class="text-center">
+                      <% if (match.played) { %>
+                        <span class="badge bg-success">Done</span>
+                      <% } else { %>
+                        <span class="badge bg-secondary">Pending</span>
+                      <% } %>
+                    </td>
+                  </tr>
+                  <% }) %>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+      <% }) %>
+    </div>
+  </div>
+</div>
+
+<!-- ===== SECTION 2: KNOCKOUT MATCHUPS SETUP ===== -->
+<div class="card shadow-sm mb-5">
+  <div class="card-header bg-dark text-white">
+    <h5 class="mb-0"><i class="bi bi-diagram-3 me-2"></i>Setup Knockout Matchups</h5>
+  </div>
+  <div class="card-body">
+    <p class="text-muted small mb-3">Enter team names exactly as they appear (case-sensitive). Round: r32, r16, qf, sf, final. Position: 1–16 for R32, etc.</p>
+    <form method="POST" action="/admin/knockout-match" class="row g-2 align-items-end">
+      <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+      <div class="col-md-2">
+        <label class="form-label">Round</label>
+        <select class="form-select form-select-sm" name="round" required>
+          <option value="r32">Round of 32</option>
+          <option value="r16">Round of 16</option>
+          <option value="qf">Quarter-Finals</option>
+          <option value="sf">Semi-Finals</option>
+          <option value="final">Final</option>
+        </select>
+      </div>
+      <div class="col-md-1">
+        <label class="form-label">Position</label>
+        <input type="number" class="form-control form-control-sm" name="position" min="1" max="16" required placeholder="1">
+      </div>
+      <div class="col-md-4">
+        <label class="form-label">Home Team Name</label>
+        <input type="text" class="form-control form-control-sm" name="home_team_name" required placeholder="e.g. Brazil">
+      </div>
+      <div class="col-md-4">
+        <label class="form-label">Away Team Name</label>
+        <input type="text" class="form-control form-control-sm" name="away_team_name" required placeholder="e.g. France">
+      </div>
+      <div class="col-md-1">
+        <button type="submit" class="btn btn-primary btn-sm w-100">Set</button>
+      </div>
+    </form>
+
+    <!-- Show existing knockout matchups -->
+    <% const existingRounds = ['r32', 'r16', 'qf', 'sf', 'final']; %>
+    <% const existingRoundLabels = { r32: 'Round of 32', r16: 'Round of 16', qf: 'Quarter-Finals', sf: 'Semi-Finals', final: 'Final' }; %>
+    <% existingRounds.forEach(round => { %>
+    <% if (knockoutByRound[round] && knockoutByRound[round].length > 0) { %>
+    <hr>
+    <h6 class="text-muted"><%= existingRoundLabels[round] %></h6>
+    <div class="table-responsive">
+      <table class="table table-sm table-hover mb-0">
+        <thead class="table-light"><tr><th>#</th><th>Home</th><th>Away</th><th class="text-center">Winner</th><th class="text-center">Status</th></tr></thead>
+        <tbody>
+          <% knockoutByRound[round].forEach(m => { %>
+          <tr>
+            <td><%= m.position %></td>
+            <td><%= m.home_team || '—' %></td>
+            <td><%= m.away_team || '—' %></td>
+            <td class="text-center"><%= m.winner_team || '—' %></td>
+            <td class="text-center">
+              <% if (m.played) { %>
+                <span class="badge bg-success">Played</span>
+              <% } else { %>
+                <span class="badge bg-secondary">Pending</span>
+              <% } %>
+            </td>
+          </tr>
+          <% }) %>
+        </tbody>
+      </table>
+    </div>
+    <% } %>
+    <% }) %>
+  </div>
+</div>
+
+<!-- ===== SECTION 3: KNOCKOUT RESULTS ===== -->
+<div class="card shadow-sm mb-5">
+  <div class="card-header bg-dark text-white">
+    <h5 class="mb-0"><i class="bi bi-check-circle me-2"></i>Record Knockout Results</h5>
+  </div>
+  <div class="card-body">
+    <% const allKnockoutMatches = []; %>
+    <% rounds.forEach(round => { if (knockoutByRound[round]) allKnockoutMatches.push(...knockoutByRound[round]); }); %>
+    <% if (allKnockoutMatches.length === 0) { %>
+    <p class="text-muted">No knockout matches have been set up yet.</p>
+    <% } else { %>
+    <div class="table-responsive">
+      <table class="table table-hover align-middle">
+        <thead class="table-light">
+          <tr>
+            <th>Round</th>
+            <th>#</th>
+            <th>Match</th>
+            <th style="width:280px">Set Winner</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% allKnockoutMatches.forEach(m => { %>
+          <tr class="<%= m.played ? 'table-light' : '' %>">
+            <td><span class="badge bg-dark"><%= roundLabels[m.round] %></span></td>
+            <td><%= m.position %></td>
+            <td>
+              <% if (m.home_team && m.away_team) { %>
+                <%= m.home_team %> vs <%= m.away_team %>
+                <% if (m.played && m.winner_team) { %>
+                  <br><small class="text-success"><i class="bi bi-check me-1"></i>Winner: <%= m.winner_team %></small>
+                <% } %>
+              <% } else { %>
+                <span class="text-muted fst-italic">Not set</span>
+              <% } %>
+            </td>
+            <td>
+              <% if (m.home_team && m.away_team) { %>
+              <form method="POST" action="/admin/knockout-result" class="d-flex gap-2">
+                <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                <input type="hidden" name="knockout_match_id" value="<%= m.id %>">
+                <select class="form-select form-select-sm" name="winner_team_name" required>
+                  <option value="">Pick winner…</option>
+                  <option value="<%= m.home_team %>" <%= m.winner_team === m.home_team ? 'selected' : '' %>><%= m.home_team %></option>
+                  <option value="<%= m.away_team %>" <%= m.winner_team === m.away_team ? 'selected' : '' %>><%= m.away_team %></option>
+                </select>
+                <button type="submit" class="btn btn-sm btn-success">
+                  <i class="bi bi-check-lg"></i>
+                </button>
+              </form>
+              <% } else { %>
+                <span class="text-muted small">—</span>
+              <% } %>
+            </td>
+          </tr>
+          <% }) %>
+        </tbody>
+      </table>
+    </div>
+    <% } %>
+  </div>
+</div>
+
+<%- include('partials/footer') %>

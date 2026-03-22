@@ -1,0 +1,92 @@
+<%- include('partials/header') %>
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <div>
+    <h2><i class="bi bi-table me-2"></i>Group Stage Picks</h2>
+    <p class="text-muted mb-0">Bracket: <strong><%= bracket.name %></strong></p>
+  </div>
+  <a href="/dashboard" class="btn btn-outline-secondary btn-sm">
+    <i class="bi bi-arrow-left me-1"></i>Back
+  </a>
+</div>
+
+<div class="alert alert-info alert-sm mb-4">
+  <i class="bi bi-info-circle me-2"></i>
+  <strong>Scoring:</strong> Exact score = <strong>2 pts</strong>, correct outcome only = <strong>1 pt</strong>, wrong outcome = <strong>0 pts</strong>.
+  Enter your predicted scores for all 72 matches, then click <strong>Save All Picks</strong>.
+</div>
+
+<form method="POST" action="/brackets/<%= bracket.id %>/group-picks">
+  <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+  <div class="accordion mb-4" id="groupAccordion">
+    <% groupNames.forEach((groupName, idx) => { %>
+    <div class="accordion-item">
+      <h2 class="accordion-header" id="heading<%= groupName %>">
+        <button class="accordion-button <%= idx > 0 ? 'collapsed' : '' %> fw-bold" type="button"
+                data-bs-toggle="collapse" data-bs-target="#collapse<%= groupName %>">
+          <span class="badge bg-dark me-3">Group <%= groupName %></span>
+          <% const firstMatch = groupedMatches[groupName][0]; %>
+          <span class="text-muted small fw-normal">6 matches</span>
+        </button>
+      </h2>
+      <div id="collapse<%= groupName %>" class="accordion-collapse collapse <%= idx === 0 ? 'show' : '' %>"
+           data-bs-parent="#groupAccordion">
+        <div class="accordion-body p-0">
+          <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+              <thead class="table-dark">
+                <tr>
+                  <th class="text-end">Home Team</th>
+                  <th class="text-center" style="width:120px">Score</th>
+                  <th>Away Team</th>
+                  <% /* Show actual result column if any played */ %>
+                  <th class="text-center">Result</th>
+                </tr>
+              </thead>
+              <tbody>
+                <% groupedMatches[groupName].forEach(match => { %>
+                <tr class="<%= match.played ? 'table-light' : '' %>">
+                  <td class="text-end">
+                    <strong><%= match.home_team %></strong>
+                  </td>
+                  <td class="text-center">
+                    <div class="d-flex align-items-center justify-content-center gap-1">
+                      <input type="number" class="form-control form-control-sm score-input text-center"
+                             name="home_<%= match.id %>"
+                             value="<%= match.home_score_pick !== null && match.home_score_pick !== undefined ? match.home_score_pick : 0 %>"
+                             min="0" max="<%= maxScore %>" required>
+                      <span class="text-muted fw-bold">–</span>
+                      <input type="number" class="form-control form-control-sm score-input text-center"
+                             name="away_<%= match.id %>"
+                             value="<%= match.away_score_pick !== null && match.away_score_pick !== undefined ? match.away_score_pick : 0 %>"
+                             min="0" max="<%= maxScore %>" required>
+                    </div>
+                  </td>
+                  <td><strong><%= match.away_team %></strong></td>
+                  <td class="text-center">
+                    <% if (match.played) { %>
+                      <span class="badge bg-success"><%= match.home_score %>–<%= match.away_score %></span>
+                    <% } else { %>
+                      <span class="text-muted small">Pending</span>
+                    <% } %>
+                  </td>
+                </tr>
+                <% }) %>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+    <% }) %>
+  </div>
+
+  <div class="d-flex justify-content-between align-items-center sticky-bottom bg-white py-3 border-top">
+    <span class="text-muted">72 matches across 12 groups</span>
+    <button type="submit" class="btn btn-warning btn-lg px-5">
+      <i class="bi bi-save me-2"></i>Save All Picks
+    </button>
+  </div>
+</form>
+
+<%- include('partials/footer') %>

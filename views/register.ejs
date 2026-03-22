@@ -1,0 +1,44 @@
+<%- include('partials/header') %>
+
+<div class="row justify-content-center">
+  <div class="col-md-5">
+    <div class="card shadow-sm">
+      <div class="card-header bg-dark text-white">
+        <h4 class="mb-0"><i class="bi bi-person-plus me-2"></i>Create Account</h4>
+      </div>
+      <div class="card-body p-4">
+        <form method="POST" action="/register">
+          <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+          <div class="mb-3">
+            <label for="username" class="form-label">Username</label>
+            <input type="text" class="form-control" id="username" name="username"
+                   required minlength="3" maxlength="30" placeholder="Choose a username">
+          </div>
+          <div class="mb-3">
+            <label for="email" class="form-label">Email</label>
+            <input type="email" class="form-control" id="email" name="email"
+                   required placeholder="your@email.com">
+          </div>
+          <div class="mb-3">
+            <label for="password" class="form-label">Password</label>
+            <input type="password" class="form-control" id="password" name="password"
+                   required minlength="6" placeholder="At least 6 characters">
+          </div>
+          <div class="mb-4">
+            <label for="confirm_password" class="form-label">Confirm Password</label>
+            <input type="password" class="form-control" id="confirm_password" name="confirm_password"
+                   required placeholder="Repeat your password">
+          </div>
+          <button type="submit" class="btn btn-warning w-100 fw-bold">
+            <i class="bi bi-person-check me-2"></i>Register
+          </button>
+        </form>
+      </div>
+      <div class="card-footer text-center">
+        Already have an account? <a href="/login">Login here</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<%- include('partials/footer') %>

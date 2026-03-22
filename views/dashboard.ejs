@@ -1,0 +1,51 @@
+<%- include('partials/header') %>
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <h2><i class="bi bi-grid me-2"></i>My Brackets</h2>
+  <a href="/brackets/new" class="btn btn-warning">
+    <i class="bi bi-plus-circle me-2"></i>New Bracket
+  </a>
+</div>
+
+<% if (brackets.length === 0) { %>
+<div class="alert alert-info">
+  <i class="bi bi-info-circle me-2"></i>
+  You haven't created any brackets yet.
+  <a href="/brackets/new" class="alert-link">Create your first bracket!</a>
+</div>
+<% } else { %>
+<div class="row g-3">
+  <% brackets.forEach(bracket => { %>
+  <div class="col-md-6 col-lg-4">
+    <div class="card shadow-sm h-100">
+      <div class="card-header bg-dark text-white d-flex align-items-center">
+        <i class="bi bi-bookmark-star me-2 text-warning"></i>
+        <span class="fw-bold text-truncate"><%= bracket.name %></span>
+      </div>
+      <div class="card-body">
+        <p class="text-muted small mb-3">
+          <i class="bi bi-calendar me-1"></i>
+          Created: <%= new Date(bracket.created_at).toLocaleDateString() %>
+        </p>
+        <div class="d-grid gap-2">
+          <a href="/brackets/<%= bracket.id %>/group-picks" class="btn btn-outline-primary btn-sm">
+            <i class="bi bi-table me-1"></i>Group Stage Picks
+          </a>
+          <% if (groupStageComplete) { %>
+          <a href="/brackets/<%= bracket.id %>/knockout-picks" class="btn btn-outline-success btn-sm">
+            <i class="bi bi-diagram-3 me-1"></i>Knockout Picks
+          </a>
+          <% } else { %>
+          <button class="btn btn-outline-secondary btn-sm" disabled title="Available after group stage">
+            <i class="bi bi-lock me-1"></i>Knockout Picks (Locked)
+          </button>
+          <% } %>
+        </div>
+      </div>
+    </div>
+  </div>
+  <% }) %>
+</div>
+<% } %>
+
+<%- include('partials/footer') %>
