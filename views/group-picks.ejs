@@ -54,12 +54,12 @@
                       <input type="number" class="form-control form-control-sm score-input text-center"
                              name="home_<%= match.id %>"
                              value="<%= match.home_score_pick !== null && match.home_score_pick !== undefined ? match.home_score_pick : 0 %>"
-                             min="0" max="20" required>
+                             min="0" max="<%= maxScore %>" required>
                       <span class="text-muted fw-bold">–</span>
                       <input type="number" class="form-control form-control-sm score-input text-center"
                              name="away_<%= match.id %>"
                              value="<%= match.away_score_pick !== null && match.away_score_pick !== undefined ? match.away_score_pick : 0 %>"
-                             min="0" max="20" required>
+                             min="0" max="<%= maxScore %>" required>
                     </div>
                   </td>
                   <td><strong><%= match.away_team %></strong></td>

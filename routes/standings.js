@@ -1,13 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const db = require('../db/database');
-const { KNOCKOUT_POINTS } = require('../utils/constants');
-
-function getOutcome(home, away) {
-  if (home > away) return 'home';
-  if (home < away) return 'away';
-  return 'draw';
-}
+const { KNOCKOUT_POINTS, calcGroupPickPoints } = require('../utils/constants');
 
 // GET /standings
 router.get('/standings', (req, res) => {
@@ -35,14 +29,10 @@ router.get('/standings', (req, res) => {
     let groupPoints = 0;
     for (const pick of groupPicks) {
       if (!pick.played || pick.home_score === null || pick.away_score === null) continue;
-      const actualOutcome = getOutcome(pick.home_score, pick.away_score);
-      const pickOutcome = getOutcome(pick.home_score_pick, pick.away_score_pick);
-      if (pickOutcome !== actualOutcome) continue;
-      if (pick.home_score_pick === pick.home_score && pick.away_score_pick === pick.away_score) {
-        groupPoints += 2;
-      } else {
-        groupPoints += 1;
-      }
+      groupPoints += calcGroupPickPoints(
+        pick.home_score, pick.away_score,
+        pick.home_score_pick, pick.away_score_pick
+      );
     }
 
     // --- Knockout stage scoring ---

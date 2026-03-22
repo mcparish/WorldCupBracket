@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const db = require('../db/database');
 const { requireLogin } = require('../middleware/auth');
-const { ROUNDS, ROUND_LABELS } = require('../utils/constants');
+const { ROUNDS, ROUND_LABELS, MAX_SCORE } = require('../utils/constants');
 
 // Helper: verify bracket belongs to logged-in user
 function ownsBracket(bracketId, userId) {
@@ -47,7 +47,8 @@ router.get('/brackets/:id/group-picks', requireLogin, (req, res) => {
     title: `Group Picks — ${bracket.name}`,
     bracket,
     groupedMatches,
-    groupNames: Object.keys(groupedMatches).sort()
+    groupNames: Object.keys(groupedMatches).sort(),
+    maxScore: MAX_SCORE
   });
 });
 

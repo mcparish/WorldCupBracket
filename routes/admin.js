@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const db = require('../db/database');
 const { requireAdmin } = require('../middleware/auth');
-const { ROUNDS, ROUND_LABELS } = require('../utils/constants');
+const { ROUNDS, ROUND_LABELS, MAX_SCORE } = require('../utils/constants');
 
 // GET /admin
 router.get('/admin', requireAdmin, (req, res) => {
@@ -53,7 +53,8 @@ router.get('/admin', requireAdmin, (req, res) => {
     groupStageComplete: groupStageComplete ? groupStageComplete.value === '1' : false,
     knockoutByRound,
     rounds,
-    roundLabels
+    roundLabels,
+    maxScore: MAX_SCORE
   });
 });
 
